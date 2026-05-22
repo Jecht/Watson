@@ -12,12 +12,18 @@ kotlin {
     }
 }
 dependencies {
-    implementation(projects.shared)
+    implementation(dependencyNotation = projects.shared)
 
-    implementation(libs.androidx.activity.compose)
+    implementation(dependencyNotation = libs.androidx.activity.compose)
 
-    implementation(libs.compose.uiToolingPreview)
-    debugImplementation(libs.compose.uiTooling)
+    implementation(dependencyNotation = libs.compose.uiToolingPreview)
+
+    implementation(dependencyNotation = project.dependencies.platform(libs.koin.bom))
+    implementation(dependencyNotation = libs.koin.core)
+    implementation(dependencyNotation = libs.koin.compose)
+    implementation(dependencyNotation = libs.koin.compose.viewmodel)
+
+    debugImplementation(dependencyNotation = libs.compose.uiTooling)
 }
 
 android {

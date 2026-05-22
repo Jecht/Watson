@@ -1,4 +1,6 @@
-package com.kapps.watson
+package com.kapps.watson.presentation
+
+import com.kapps.watson.getPlatform
 
 class Greeting {
     private val platform = getPlatform()

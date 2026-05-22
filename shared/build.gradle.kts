@@ -19,65 +19,72 @@ kotlin {
             binaryOption("bundleId", "com.kapps.watson.shared")
         }
     }
-    
+
     jvm()
-    
+
     androidLibrary {
-       namespace = "com.kapps.watson.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
-    
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
+        namespace = "com.kapps.watson.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.ktor.client.okhttp)
+            implementation(dependencyNotation = libs.compose.uiToolingPreview)
+            implementation(dependencyNotation = libs.ktor.client.okhttp)
         }
 
         commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(dependencyNotation = libs.compose.runtime)
+            implementation(dependencyNotation = libs.compose.foundation)
+            implementation(dependencyNotation = libs.compose.material3)
+            implementation(dependencyNotation = libs.compose.ui)
+            implementation(dependencyNotation = libs.compose.components.resources)
+            implementation(dependencyNotation = libs.compose.uiToolingPreview)
+            implementation(dependencyNotation = libs.androidx.lifecycle.viewmodelCompose)
+            implementation(dependencyNotation = libs.androidx.lifecycle.runtimeCompose)
 
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
+            implementation(dependencyNotation = project.dependencies.platform(libs.koin.bom))
+            implementation(dependencyNotation = libs.koin.core)
+            implementation(dependencyNotation = libs.koin.compose)
+            implementation(dependencyNotation = libs.koin.compose.viewmodel)
 
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.contentNegotiation)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.serialization.kotlinxJson)
+            implementation(dependencyNotation = libs.kotlinx.serialization.json)
+            implementation(dependencyNotation = libs.kotlinx.coroutines.core)
+            implementation(dependencyNotation = libs.kotlinx.datetime)
+
+            implementation(dependencyNotation = libs.ktor.client.core)
+            implementation(dependencyNotation = libs.ktor.client.contentNegotiation)
+            implementation(dependencyNotation = libs.ktor.client.logging)
+            implementation(dependencyNotation = libs.ktor.serialization.kotlinxJson)
         }
 
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(dependencyNotation = libs.koin.test)
+            implementation(dependencyNotation = libs.kotlin.test)
+            implementation(dependencyNotation = libs.kotlinx.coroutines.test)
         }
 
         iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+            implementation(dependencyNotation = libs.ktor.client.darwin)
         }
 
         jvmMain.dependencies {
-            implementation(libs.ktor.client.cio)
+            implementation(dependencyNotation = libs.ktor.client.cio)
         }
     }
 }
 
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
+    androidRuntimeClasspath(dependencyNotation = libs.compose.uiTooling)
 }

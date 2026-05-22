@@ -1,4 +1,4 @@
-package com.kapps.watson
+package com.kapps.watson.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image

@@ -7,12 +7,17 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.shared)
+    implementation(dependencyNotation = projects.shared)
 
-    implementation(compose.desktop.currentOs)
-    implementation(libs.kotlinx.coroutinesSwing)
+    implementation(dependencyNotation = compose.desktop.currentOs)
+    implementation(dependencyNotation = libs.kotlinx.coroutinesSwing)
 
-    implementation(libs.compose.uiToolingPreview)
+    implementation(dependencyNotation = libs.compose.uiToolingPreview)
+
+    implementation(dependencyNotation = project.dependencies.platform(libs.koin.bom))
+    implementation(dependencyNotation = libs.koin.core)
+    implementation(dependencyNotation = libs.koin.compose)
+    implementation(dependencyNotation = libs.koin.compose.viewmodel)
 }
 
 compose.desktop {
