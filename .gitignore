@@ -1,0 +1,86 @@
+# === Build outputs ===
+build/
+*/build/
+**/build/
+.gradle/
+.kotlin/
+
+# === Kotlin Multiplatform ===
+kotlin-js-store/
+
+# === IntelliJ / Android Studio ===
+*.iml
+.idea/
+.gradletasknamecache
+gradle-app.setting
+captures/
+
+# === Android ===
+local.properties
+.externalNativeBuild
+.cxx
+*.jks
+*.keystore
+/androidApp/key
+
+# === Xcode / iOS ===
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+Pods/
+
+# === macOS (OS files) ===
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# === Windows (OS files) ===
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# === Linux (OS files) ===
+*~
+.directory
+.Trash-*
+.nfs*
+
+# === Compose Desktop — installeurs natifs ===
+# macOS
+*.dmg
+*.pkg
+# Windows
+*.msi
+*.exe
+# Linux
+*.deb
+*.rpm
+*.AppImage
+# Multi-plateforme
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# === Compose Desktop — dossiers de packaging ===
+**/compose/binaries/
+**/compose/jars/
+**/compose/tmp/
+
+# === Logs / crashes JVM ===
+*.log
+hs_err_pid*.log
+replay_pid*.log
+
+# === Divers ===
+*yarn.lock
+.env
+.env.local
