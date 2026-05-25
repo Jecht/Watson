@@ -21,4 +21,10 @@ val domainModule = module {
             detectWafUseCase = get(),
         )
     }
+    factory<ScanUsernameUseCase> {
+        ScanUsernameUseCaseImpl(
+            sitesRepository = get(),
+            probeSiteUseCase = get(),
+        )
+    }
 }

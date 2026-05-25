@@ -66,7 +66,7 @@ fun createHttpClient(json: Json): HttpClient = HttpClient {
     }
 
     install(Logging) {
-        level = LogLevel.INFO
+        level = LogLevel.NONE
         logger = object : Logger {
             override fun log(message: String) {
                 println("[Ktor] $message")
