@@ -1,5 +1,7 @@
 package com.kapps.watson.core.network.di
 
+import com.kapps.watson.core.domain.network.SiteProbeService
+import com.kapps.watson.core.network.SiteProbeServiceImpl
 import com.kapps.watson.core.network.createHttpClient
 import com.kapps.watson.core.network.createJson
 import org.koin.dsl.module
@@ -14,4 +16,5 @@ import org.koin.dsl.module
 val networkModule = module {
     single { createJson() }
     single { createHttpClient(json = get()) }
+    single<SiteProbeService> { SiteProbeServiceImpl(httpClient = get()) }
 }

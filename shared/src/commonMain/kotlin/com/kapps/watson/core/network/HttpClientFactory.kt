@@ -2,8 +2,11 @@ package com.kapps.watson.core.network
 
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
@@ -40,6 +43,22 @@ fun createHttpClient(json: Json): HttpClient = HttpClient {
          * which would massively inflate the WAF false-positive rate.
          */
         agent = "Mozilla/5.0 (X11; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0"
+    }
+
+    // Add default browser-like headers on every request.
+    // Some sites (notably GitHub) will silently hang on requests that omit these.
+    install(DefaultRequest) {
+        header(HttpHeaders.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+        header(HttpHeaders.AcceptLanguage, "en-US,en;q=0.5")
+        header(HttpHeaders.AcceptEncoding, "gzip, deflate, br")
+    }
+
+    // Transparently negotiate and decompress gzip/deflate responses.
+    // Without this, gzipped bodies would arrive as raw binary and break text parsing.
+    install(ContentEncoding) {
+        mode = ContentEncodingConfig.Mode.DecompressResponse
+        gzip()
+        deflate()
     }
 
     install(ContentNegotiation) {

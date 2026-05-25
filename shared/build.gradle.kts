@@ -67,6 +67,7 @@ kotlin {
             implementation(dependencyNotation = libs.ktor.client.contentNegotiation)
             implementation(dependencyNotation = libs.ktor.client.logging)
             implementation(dependencyNotation = libs.ktor.serialization.kotlinxJson)
+            implementation(dependencyNotation = libs.ktor.client.encoding)
         }
 
         commonTest.dependencies {

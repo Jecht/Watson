@@ -1,5 +1,6 @@
 package com.kapps.watson.di
 
+import com.kapps.watson.core.domain.di.domainModule
 import com.kapps.watson.core.network.di.networkModule
 import com.kapps.watson.core.repository.di.repositoryModule
 
@@ -11,7 +12,7 @@ import com.kapps.watson.core.repository.di.repositoryModule
  */
 val appModules = listOf(
     networkModule,
-     repositoryModule,
-    // engineModule,       // added with the scan engine
-    // viewModelModule,    // added with the UI
+    repositoryModule,
+    domainModule,
+    // viewModelModule,   // added with the UI
 )
