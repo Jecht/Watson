@@ -10,7 +10,7 @@ import com.kapps.watson.core.repository.di.repositoryModule
  *
  * This list is consumed by the startKoin block in each platform's entry point.
  */
-val appModules = listOf(
+val sharedModules = listOf(
     networkModule,
     repositoryModule,
     domainModule,

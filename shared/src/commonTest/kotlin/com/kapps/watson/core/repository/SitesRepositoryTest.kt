@@ -1,6 +1,6 @@
 package com.kapps.watson.core.repository
 
-import com.kapps.watson.di.appModules
+import com.kapps.watson.di.sharedModules
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -19,7 +19,7 @@ class SitesRepositoryTest : KoinTest {
     @BeforeTest
     fun setUp() {
         startKoin {
-            modules(appModules)
+            modules(sharedModules)
         }
     }
 

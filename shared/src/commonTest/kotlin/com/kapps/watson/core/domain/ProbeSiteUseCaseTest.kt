@@ -3,7 +3,7 @@ package com.kapps.watson.core.domain
 import com.kapps.watson.core.domain.usecase.ProbeSiteUseCase
 import com.kapps.watson.core.model.QueryStatus
 import com.kapps.watson.core.repository.SitesRepository
-import com.kapps.watson.di.appModules
+import com.kapps.watson.di.sharedModules
 import com.kapps.watson.runIntegrationTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -21,7 +21,7 @@ class ProbeSiteUseCaseTest : KoinTest {
 
     @BeforeTest
     fun setUp() {
-        startKoin { modules(appModules) }
+        startKoin { modules(sharedModules) }
     }
 
     @AfterTest

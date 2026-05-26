@@ -2,7 +2,7 @@ package com.kapps.watson.domain.usecase
 
 import com.kapps.watson.core.domain.usecase.ScanUsernameUseCase
 import com.kapps.watson.core.model.QueryStatus
-import com.kapps.watson.di.appModules
+import com.kapps.watson.di.sharedModules
 import com.kapps.watson.runIntegrationTest
 import kotlinx.coroutines.flow.toList
 import org.koin.core.context.startKoin
@@ -21,7 +21,7 @@ class ScanUsernameUseCaseTest : KoinTest {
 
     @BeforeTest
     fun setUp() {
-        startKoin { modules(appModules) }
+        startKoin { modules(sharedModules) }
     }
 
     @AfterTest
