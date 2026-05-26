@@ -19,6 +19,7 @@ dependencies {
     implementation(dependencyNotation = libs.compose.uiToolingPreview)
 
     implementation(dependencyNotation = project.dependencies.platform(libs.koin.bom))
+    implementation(dependencyNotation = libs.koin.android)
     implementation(dependencyNotation = libs.koin.core)
     implementation(dependencyNotation = libs.koin.compose)
     implementation(dependencyNotation = libs.koin.compose.viewmodel)
