@@ -8,7 +8,7 @@ internal class ValidateUsernameUseCaseImpl : ValidateUsernameUseCase {
      * Matches `{,N}` quantifiers where the lower bound is implicit (Python syntax).
      * Java regex requires an explicit `{0,N}` form, so we rewrite the pattern before compiling.
      */
-    private val implicitLowerBoundQuantifier = Regex("""\{,(\d+)}""")
+    private val implicitLowerBoundQuantifier = Regex("""\{,(\d+)\}""")
 
     override fun invoke(username: String, site: SiteInfo): Boolean {
         val rawPattern = site.regexCheck ?: return true
