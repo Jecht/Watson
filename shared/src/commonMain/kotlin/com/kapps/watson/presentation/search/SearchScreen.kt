@@ -11,96 +11,179 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kapps.watson.core.model.QueryResult
 import com.kapps.watson.core.platform.openUrlInBrowser
+import com.kapps.watson.presentation.util.WindowWidthSize
+import com.kapps.watson.presentation.util.rememberWindowWidthSize
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel = koinViewModel(),
     modifier: Modifier = Modifier,
+    viewModel: SearchViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val windowWidth = rememberWindowWidthSize()
+    val isCompact = windowWidth == WindowWidthSize.Compact
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        content = {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.usernameInput,
-                onValueChange = viewModel::onUsernameChange,
-                label = { Text("Username") },
-                placeholder = { Text("e.g. torvalds") },
-                enabled = !state.isScanning,
-                singleLine = true,
+    ) {
+        SearchInputBar(
+            value = state.usernameInput,
+            onValueChange = viewModel::onUsernameChange,
+            onStartScan = viewModel::onStartScan,
+            onCancelScan = viewModel::onCancelScan,
+            isScanning = state.isScanning,
+            canStartScan = state.canStartScan,
+            isCompact = isCompact,
+        )
+
+        if (state.isScanning) {
+            ScanProgress(
+                probedCount = state.probedCount,
+                totalSites = state.totalSites,
+            )
+        }
+
+        state.errorMessage?.let { message ->
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
+
+        if (state.claimedResults.isNotEmpty()) {
+            Text(
+                text = "Found ${state.claimedResults.size} accounts",
+                style = MaterialTheme.typography.titleMedium,
             )
 
-            if (state.isScanning) {
-                OutlinedButton(
-                    onClick = viewModel::onCancelScan,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = "Cancel")
-                }
-            } else {
-                Button(
-                    onClick = viewModel::onStartScan,
-                    enabled = state.canStartScan,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(text = "Search")
-                }
-            }
-
-            if (state.isScanning) {
-                ScanProgress(
-                    probedCount = state.probedCount,
-                    totalSites = state.totalSites,
-                )
-            }
-
-            state.errorMessage?.let { message ->
-                Text(
-                    text = message,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            if (state.claimedResults.isNotEmpty()) {
-                Text(
-                    text = "Found ${state.claimedResults.size} accounts",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(
-                        items = state.claimedResults,
-                        key = { result -> result.siteName },
-                    ) { result ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
-                                    slideInVertically(
-                                        animationSpec = tween(durationMillis = 300),
-                                        initialOffsetY = { fullHeight -> fullHeight / 2 },
-                                    ),
-                        ) {
-                            ClaimedSiteCard(result = result)
-                        }
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(
+                    items = state.claimedResults,
+                    key = { result -> result.siteName },
+                ) { result ->
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(animationSpec = tween(durationMillis = 300)) +
+                                slideInVertically(
+                                    animationSpec = tween(durationMillis = 300),
+                                    initialOffsetY = { fullHeight -> fullHeight / 2 },
+                                ),
+                    ) {
+                        ClaimedSiteCard(result = result)
                     }
                 }
             }
-        },
+        }
+    }
+}
+
+@Composable
+private fun SearchInputBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onStartScan: () -> Unit,
+    onCancelScan: () -> Unit,
+    isScanning: Boolean,
+    canStartScan: Boolean,
+    isCompact: Boolean,
+) {
+    if (isCompact) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            content = {
+                UsernameField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    enabled = !isScanning,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                ScanButton(
+                    onStartScan = onStartScan,
+                    onCancelScan = onCancelScan,
+                    isScanning = isScanning,
+                    canStartScan = canStartScan,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+        )
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            content = {
+                UsernameField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    enabled = !isScanning,
+                    modifier = Modifier.weight(1f),
+                )
+                ScanButton(
+                    onStartScan = onStartScan,
+                    onCancelScan = onCancelScan,
+                    isScanning = isScanning,
+                    canStartScan = canStartScan,
+                    modifier = Modifier.width(140.dp),
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun UsernameField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text("Username") },
+        placeholder = { Text("e.g. torvalds") },
+        modifier = modifier,
+        enabled = enabled,
+        singleLine = true,
     )
+}
+
+@Composable
+private fun ScanButton(
+    onStartScan: () -> Unit,
+    onCancelScan: () -> Unit,
+    isScanning: Boolean,
+    canStartScan: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    if (isScanning) {
+        OutlinedButton(
+            onClick = onCancelScan,
+            modifier = modifier,
+        ) {
+            Text(text = "Cancel")
+        }
+    } else {
+        Button(
+            onClick = onStartScan,
+            enabled = canStartScan,
+            modifier = modifier,
+        ) {
+            Text(text = "Search")
+        }
+    }
 }
 
 @Composable
