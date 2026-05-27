@@ -1,10 +1,13 @@
 package com.kapps.watson.core.repository
 
 import com.kapps.watson.core.model.SiteInfo
+import com.kapps.watson.core.network.ExclusionsService
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -20,43 +23,49 @@ import kotlinx.serialization.json.jsonObject
 internal class SitesRepositoryImpl(
     private val httpClient: HttpClient,
     private val json: Json,
+    private val exclusionsService: ExclusionsService,
 ) : SitesRepository {
 
-    /**
-     * URL of the canonical Sherlock site catalog.
-     * Using the upstream source rather than a forked copy means we benefit from
-     * community-maintained fixes (new sites, removed false positives, ...) for free.
-     */
     private val catalogUrl = "https://data.sherlockproject.xyz"
 
-    /** In-memory cache. Populated on the first call to [loadSites]. */
     private var cachedSites: Map<String, SiteInfo>? = null
+    private var cachedExclusions: Set<String>? = null
 
-    /**
-     * Returns the full site catalog, downloading it on the first call and serving
-     * subsequent calls from the in-memory cache.
-     *
-     * @param forceRefresh If true, bypasses the cache and re-downloads the catalog.
-     * @return A map from site name (e.g. "GitHub") to its [SiteInfo] configuration.
-     */
-    override suspend fun loadSites(forceRefresh: Boolean): Map<String, SiteInfo> {
+    override suspend fun loadSites(
+        forceRefresh: Boolean,
+        honorExclusions: Boolean,
+    ): Map<String, SiteInfo> {
+        val allSites = loadAllSites(forceRefresh = forceRefresh)
+        if (honorExclusions.not()) return allSites
+
+        val exclusions = loadExclusions(forceRefresh = forceRefresh)
+
+        return allSites.filterKeys { siteName -> siteName !in exclusions }
+    }
+
+    private suspend fun loadAllSites(forceRefresh: Boolean): Map<String, SiteInfo> {
         cachedSites?.takeUnless { forceRefresh }?.let { return it }
 
         return withContext(Dispatchers.Default) {
-            val rawJson = httpClient.get(catalogUrl).bodyAsText()
-            val parsed = parseCatalog(rawJson)
-            cachedSites = parsed
-            parsed
+            coroutineScope {
+                val rawCatalog = async { httpClient.get(catalogUrl).bodyAsText() }
+                val exclusions = async { exclusionsService.loadExclusions() }
+
+                val parsed = parseCatalog(rawCatalog.await())
+                cachedSites = parsed
+                cachedExclusions = exclusions.await()
+                parsed
+            }
         }
     }
 
-    /**
-     * Parses the raw catalog JSON into a Map<String, SiteInfo>.
-     *
-     * The catalog is a flat object where each top-level key is a site name and each value
-     * is a SiteInfo object. We also drop the "${'$'}schema" entry which is JSON schema metadata,
-     * not an actual site.
-     */
+    private suspend fun loadExclusions(forceRefresh: Boolean): Set<String> {
+        cachedExclusions?.takeUnless { forceRefresh }?.let { return it }
+        val exclusions = exclusionsService.loadExclusions()
+        cachedExclusions = exclusions
+        return exclusions
+    }
+
     private fun parseCatalog(rawJson: String): Map<String, SiteInfo> {
         val rootObject: JsonObject = json
             .parseToJsonElement(rawJson)
