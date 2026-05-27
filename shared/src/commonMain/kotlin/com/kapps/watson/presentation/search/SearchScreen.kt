@@ -1,5 +1,6 @@
 package com.kapps.watson.presentation.search
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kapps.watson.core.model.QueryResult
+import com.kapps.watson.core.platform.openUrlInBrowser
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -95,7 +97,9 @@ private fun ScanProgress(probedCount: Int) {
 @Composable
 private fun ClaimedSiteCard(result: QueryResult) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { openUrlInBrowser(result.siteUrl) },
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
