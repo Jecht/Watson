@@ -27,4 +27,7 @@ val domainModule = module {
             probeSiteUseCase = get(),
         )
     }
+    factory<GetSiteCountUseCase> {
+        GetSiteCountUseCaseImpl(sitesRepository = get())
+    }
 }

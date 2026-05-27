@@ -2,6 +2,7 @@ package com.kapps.watson.presentation.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kapps.watson.core.domain.usecase.GetSiteCountUseCase
 import com.kapps.watson.core.domain.usecase.ScanUsernameUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -16,12 +17,22 @@ import kotlinx.coroutines.launch
  */
 class SearchViewModel(
     private val scanUsernameUseCase: ScanUsernameUseCase,
+    private val getSiteCountUseCase: GetSiteCountUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var scanJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            runCatching { getSiteCountUseCase() }
+                .onSuccess { count ->
+                    _uiState.update { state -> state.copy(totalSites = count) }
+                }
+        }
+    }
 
     fun onUsernameChange(newValue: String) {
         _uiState.update { state ->

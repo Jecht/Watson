@@ -14,6 +14,7 @@ data class SearchUiState(
     val isScanning: Boolean = false,
     val results: List<QueryResult> = emptyList(),
     val errorMessage: String? = null,
+    val totalSites: Int = 0,
 ) {
     /** Number of sites that have been probed so far during the current scan. */
     val probedCount: Int = results.size
