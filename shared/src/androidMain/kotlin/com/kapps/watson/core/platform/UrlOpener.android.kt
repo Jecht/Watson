@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.core.net.toUri
 import org.koin.mp.KoinPlatform.getKoin
 
-actual fun openUrlInBrowser(url: String) {
+internal actual fun platformOpenUrl(url: String) {
     runCatching {
         val context = getKoin().get<Context>()
         val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
