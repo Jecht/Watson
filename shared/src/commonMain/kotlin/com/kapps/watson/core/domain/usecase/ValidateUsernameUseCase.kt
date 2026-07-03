@@ -16,6 +16,10 @@ interface ValidateUsernameUseCase {
     /**
      * Returns true if [username] is acceptable for [site], either because the site has
      * no regex constraint or because the username matches it.
+     *
+     * Suspending because the regex — which originates from the remotely-fetched Sherlock
+     * catalog — is evaluated under a timeout to contain catastrophic-backtracking (ReDoS)
+     * patterns. On timeout we fall back to permissive behaviour (probe the site).
      */
-    operator fun invoke(username: String, site: SiteInfo): Boolean
+    suspend operator fun invoke(username: String, site: SiteInfo): Boolean
 }
