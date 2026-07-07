@@ -6,7 +6,6 @@ import com.kapps.watson.core.model.ProbeResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.request.headers
 import io.ktor.client.request.request
-import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 
 /**
@@ -36,7 +35,7 @@ internal class SiteProbeServiceImpl(
 
         return ProbeResponse(
             statusCode = response.status.value,
-            body = runCatching { response.bodyAsText() }.getOrDefault(""),
+            body = runCatching { response.bodyAsTextCapped(MAX_PROBE_BODY_BYTES) }.getOrDefault(""),
             finalUrl = response.request.url.toString(),
         )
     }

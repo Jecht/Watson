@@ -74,6 +74,7 @@ kotlin {
             implementation(dependencyNotation = libs.koin.test)
             implementation(dependencyNotation = libs.kotlin.test)
             implementation(dependencyNotation = libs.kotlinx.coroutines.test)
+            implementation(dependencyNotation = libs.ktor.client.mock)
         }
 
         iosMain.dependencies {

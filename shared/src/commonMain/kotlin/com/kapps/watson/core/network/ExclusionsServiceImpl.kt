@@ -2,7 +2,6 @@ package com.kapps.watson.core.network
 
 import io.ktor.client.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,7 +13,7 @@ internal class ExclusionsServiceImpl(
         val exclusionsUrl =
             "https://raw.githubusercontent.com/sherlock-project/sherlock/refs/heads/exclusions/false_positive_exclusions.txt"
         runCatching {
-            val rawText = httpClient.get(exclusionsUrl).bodyAsText()
+            val rawText = httpClient.get(exclusionsUrl).bodyAsTextCapped(MAX_EXCLUSIONS_BYTES)
             rawText
                 .lineSequence()
                 .map { line -> line.trim() }

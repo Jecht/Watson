@@ -2,6 +2,8 @@ package com.kapps.watson.core.repository
 
 import com.kapps.watson.core.model.SiteInfo
 import com.kapps.watson.core.network.ExclusionsService
+import com.kapps.watson.core.network.MAX_CATALOG_BYTES
+import com.kapps.watson.core.network.bodyAsTextCapped
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -72,7 +74,7 @@ internal class SitesRepositoryImpl(
 
     /** Downloads, validates, caches (memory + disk) and returns the remote catalog. */
     private suspend fun fetchAndPersistCatalog(): Map<String, SiteInfo> = withContext(Dispatchers.Default) {
-        val rawCatalog = httpClient.get(catalogUrl).bodyAsText()
+        val rawCatalog = httpClient.get(catalogUrl).bodyAsTextCapped(MAX_CATALOG_BYTES)
         val parsed = parseCatalog(rawCatalog)
         // Schema guard: never let an empty/degenerate payload replace a good cache.
         check(parsed.isNotEmpty()) { "Remote catalog parsed to an empty map" }
