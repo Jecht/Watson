@@ -40,4 +40,19 @@ class ValidateUsernameUseCaseUnitTest {
         val site = testSite(regexCheck = "[unclosed bracket")
         assertEquals(true, useCase(username = "anything", site = site))
     }
+
+    @Test
+    fun validate_withCatastrophicPatternAndHugeInput_isBoundedAndDoesNotHang() = runTest {
+        // Classic ReDoS pattern: `(a+)+$` explodes exponentially on a long run of 'a's that
+        // fails to match. Fed the raw input this would hang for effectively forever; the input
+        // cap truncates it well below the blow-up threshold, so evaluation stays fast.
+        // If the cap regressed, this test would hang and fail rather than pass silently.
+        val site = testSite(regexCheck = "^(a+)+$")
+        val hugeInput = "a".repeat(100_000) + "!"
+
+        val result = useCase(username = hugeInput, site = site)
+
+        // Truncated to a run of 'a's (the trailing '!' is dropped), which the pattern matches.
+        assertEquals(true, result)
+    }
 }
