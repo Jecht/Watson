@@ -48,6 +48,40 @@ class ProbeSiteUseCaseUnitTest {
         assertEquals(null, result.queryTime) // never sent
     }
 
+    @Test
+    fun probe_withUnsafeProbeUrl_returnsIllegalWithoutProbing() = runTest {
+        // A compromised catalog entry pointing at the cloud metadata endpoint must never be probed.
+        val site = testSite(urlPattern = "https://169.254.169.254/latest/meta-data/{}")
+        val useCase = buildUseCase(
+            siteProbeService = FakeSiteProbeService.returning(
+                response = ProbeResponse(statusCode = 200, body = "", finalUrl = ""),
+            ),
+        )
+
+        val result = useCase(username = "anyone", siteName = "Example", site = site)
+
+        assertEquals(QueryStatus.ILLEGAL, result.status)
+        assertEquals(null, result.queryTime) // never sent
+    }
+
+    @Test
+    fun probe_withCleartextProbeUrl_returnsIllegalWithoutProbing() = runTest {
+        val site = testSite(
+            urlPattern = "https://example.com/{}",
+            urlProbe = "http://example.com/api/{}", // urlProbe overrides the target and is cleartext
+        )
+        val useCase = buildUseCase(
+            siteProbeService = FakeSiteProbeService.returning(
+                response = ProbeResponse(statusCode = 200, body = "", finalUrl = ""),
+            ),
+        )
+
+        val result = useCase(username = "anyone", siteName = "Example", site = site)
+
+        assertEquals(QueryStatus.ILLEGAL, result.status)
+        assertEquals(null, result.queryTime)
+    }
+
     // ─── Strategy: status_code ───
 
     @Test

@@ -33,6 +33,19 @@ internal class ProbeSiteUseCaseImpl(
             ?.let { pattern -> buildProbeUrlUseCase(urlPattern = pattern, username = username) }
             ?: profileUrl
 
+        // Never send a request to a catalog-supplied URL that isn't a plain HTTPS call to a real
+        // host: a compromised catalog entry could otherwise turn the probe into an SSRF against
+        // internal/metadata endpoints. Treat an unsafe target as a site we refuse to probe.
+        if (!isProbeUrlSafe(probeUrl)) {
+            return QueryResult(
+                username = username,
+                siteName = siteName,
+                siteUrl = profileUrl,
+                status = QueryStatus.ILLEGAL,
+                errorContext = "Unsafe probe URL rejected",
+            )
+        }
+
         return runCatching {
             val startMark = TimeSource.Monotonic.markNow()
             val response = siteProbeService.probe(
